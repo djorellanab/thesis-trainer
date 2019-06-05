@@ -35,6 +35,20 @@ namespace thesis_trainer
 
         private BackgroundWorker _bgWorker;
 
+        private int workerState = 0;
+        public int WorkerState
+        {
+            get { return workerState; }
+            set
+            {
+                workerState = value;
+                if (PropertyChanged !=  null)
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs("WorkerState"));
+                }
+            }
+        }
+
         public List<StepFunctionalMovement> steps;
 
         /// <summary>
@@ -201,9 +215,8 @@ namespace thesis_trainer
                 this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-        private void checkData()
+        private void checkData(int step)
         {
-            int step = this.headerView.Trainer.functionalMovement.getStep(this.gestureResultView.Progress);
             if (step > -1)
             {
                 try
@@ -442,9 +455,13 @@ namespace thesis_trainer
             // Actualiza el estado del kinect
             this.UpdateKinectStatusText();
             this.UpdateKinectFrameData();
-            if (this.headerView.isGetData)
+            int step = this.headerView.Trainer.functionalMovement.getStep(this.gestureResultView.Progress);
+            this.gestureResultView.updateStep(step);
+            this.gestureResultView.checkNewMovementFunctional();
+             
+            if (this.headerView.isGetData && !this.gestureResultView.isNewFunctionalMovement && !this.gestureResultView.isTakeDataOfFunctionalMovement())
             {
-                this.checkData();
+                this.checkData(step);
             }
         }
 
@@ -490,18 +507,18 @@ namespace thesis_trainer
                     while (th.IsAlive) { }
                     load++;
                     getLoad = (load / total) * 100;
-                    this.headerView.updateUpload(Convert.ToInt32(getLoad));
+                    this.WorkerState = Convert.ToInt32(getLoad);
                 }
                 for (int i = 0; i < this.gestureResultView.stepsByMovement.Count; i++)
                 {
                     this.gestureResultView.getAngle(this.headerView.Trainer.functionalMovement.anglesOfMovement, i);
                     load++;
                     getLoad = (load / total) * 100;
-                    this.headerView.updateUpload(Convert.ToInt32(getLoad));
+                    this.WorkerState = Convert.ToInt32(getLoad);
                 }
                 string stringJson = JsonConvert.SerializeObject(this.gestureResultView.stepsByMovement);
                 System.IO.File.WriteAllText($"{this.headerView.Trainer.folder}/datos-entrenamiento.json", stringJson);
-                this.headerView.updateUpload(100);
+                this.WorkerState = 100;
                 MessageBox.Show($"Se ha exportado toda la informaccion a la carpeta: {this.headerView.Trainer.folder}");
             };
             _bgWorker.RunWorkerAsync();

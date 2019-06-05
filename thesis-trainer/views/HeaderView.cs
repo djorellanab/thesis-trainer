@@ -169,16 +169,6 @@ namespace thesis_trainer.views
             }
         }
 
-        private int workerState = 0;
-        public int WorkerState
-        {
-            get { return workerState; }
-            private set
-            {
-                this.SetProperty(ref this.workerState, value);
-            }
-        }
-
         private string lbCalibracion = "Calibracion de articulacion";
         public string LbCalibracion
         {
@@ -195,16 +185,16 @@ namespace thesis_trainer.views
 
         private void enableAllButtonFiles()
         {
-            this.btnOpenCarpetIsEnable = true;
-            this.btnOpenFileGBDIsEnable = true;
-            this.btnOpenFileJSONIsEnable = true;
+            this.BtnOpenCarpetIsEnable = true;
+            this.BtnOpenFileGBDIsEnable = true;
+            this.BtnOpenFileJSONIsEnable = true;
         }
 
         private void disableAllButtonFiles()
         {
-            this.btnOpenCarpetIsEnable = false;
-            this.btnOpenFileGBDIsEnable = false;
-            this.btnOpenFileJSONIsEnable = false;
+            this.BtnOpenCarpetIsEnable = false;
+            this.BtnOpenFileGBDIsEnable = false;
+            this.BtnOpenFileJSONIsEnable = false;
         }
 
         private void readMetadata()
@@ -216,14 +206,14 @@ namespace thesis_trainer.views
                 {
                     this.disableAllButtonFiles();
                     string nameCal = DetailsOfStepFunctionalMovement.getNameJoin(this.Trainer.functionalMovement.focusJoin);
-                    this.lbCalibracion = $"Calibracion de ${nameCal}";
-                    this.lbAlturaKinectText = $"La altura del Kinect es de {this.Trainer.functionalMovement.height} mts";
+                    this.LbCalibracion = $"Calibracion de ${nameCal}";
+                    this.LbAlturaKinectText = $"La altura del Kinect es de {this.Trainer.functionalMovement.height} mts";
                 }
-                this.btnCalibrarIsEnable = read;
+                this.BtnCalibrarIsEnable = read;
             }
             catch (Exception)
             {
-                this.btnCalibrarIsEnable = false;
+                this.BtnCalibrarIsEnable = false;
                 this.enableAllButtonFiles();
                 WinForms.MessageBox.Show("Hubo un error en la carpeta de metadata");
             }
@@ -231,19 +221,19 @@ namespace thesis_trainer.views
 
         private void disableAllButtonGetData()
         {
-            this.btnPlayTomaDeDatosIsEnable = false;
-            this.btnStopTomaDeDatos = false;
+            this.BtnPlayTomaDeDatosIsEnable = false;
+            this.BtnStopTomaDeDatos = false;
         }
 
 
         private void enableAllButtonGetData()
         {
-            this.btnPlayTomaDeDatosIsEnable = true;
-            this.btnStopTomaDeDatos = true;
+            this.BtnPlayTomaDeDatosIsEnable = true;
+            this.BtnStopTomaDeDatos = true;
         }
         public void updateDepth(float depth)
         {
-            this.lbProfundidadText = $"rango de profundida: {this.Trainer.functionalMovement.depthMin.ToString("0.00")} <= {depth.ToString("0.00")} <= {this.Trainer.functionalMovement.depthMax.ToString("0.00")} mts";
+            this.LbProfundidadText = $"rango de profundida: {this.Trainer.functionalMovement.depthMin.ToString("0.00")} <= {depth.ToString("0.00")} <= {this.Trainer.functionalMovement.depthMax.ToString("0.00")} mts";
             if (this.Trainer.functionalMovement.isCalibrate(depth))
             {
                 enableAllButtonGetData();
@@ -254,29 +244,29 @@ namespace thesis_trainer.views
             }
         }
 
-        private void getOpenFileDialog(ref string label, string filter, Action<string> getData)
-        {
-            WinForms.OpenFileDialog openFileDialog = new WinForms.OpenFileDialog();
-            openFileDialog.Filter = filter;
-            if (openFileDialog.ShowDialog() == WinForms.DialogResult.OK)
-            {
-                label = openFileDialog.FileName;
-                getData(openFileDialog.FileName);
-                readMetadata();
-                disableAllButtonFiles();
-            }
-        }
 
         public void btnOpenFileGBD_Click()
         {
-            getOpenFileDialog(ref this.btnOpenFileGBDText,  "Gesture base data (*.gbd)|*.gbd",
-                new Action<string>(this.Trainer.getGBD));
+            WinForms.OpenFileDialog openFileDialog = new WinForms.OpenFileDialog();
+            openFileDialog.Filter = "Gesture base data (*.gbd)|*.gbd";
+            if (openFileDialog.ShowDialog() == WinForms.DialogResult.OK)
+            {
+                this.BtnOpenFileGBDText = openFileDialog.FileName;
+                this.Trainer.getGBD(openFileDialog.FileName);
+                readMetadata();
+            }
         }
 
         public void btnOpenFileJSON_Click()
         {
-            getOpenFileDialog(ref this.btnOpenFileJSONText,  "Json files (*.json)|*.json",
-                new Action<string>(this.Trainer.getMetadata));
+            WinForms.OpenFileDialog openFileDialog = new WinForms.OpenFileDialog();
+            openFileDialog.Filter = "Json files (*.json)|*.json";
+            if (openFileDialog.ShowDialog() == WinForms.DialogResult.OK)
+            {
+                this.BtnOpenFileJSONText = openFileDialog.FileName;
+                this.Trainer.getMetadata(openFileDialog.FileName);
+                readMetadata();
+            }
         }
 
         public void btnOpenFileCarpet_Click()
@@ -287,44 +277,39 @@ namespace thesis_trainer.views
 
                 if (result == WinForms.DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
                 {
-                    btnOpenCarpetText = fbd.SelectedPath;
+                    BtnOpenCarpetText = fbd.SelectedPath;
                     this.Trainer.getCarpet(fbd.SelectedPath);
                     readMetadata();
-                    disableAllButtonFiles();
                 }
             }
         }
 
         public void btnCalibrar_Click()
         {
-            this.btnCalibrarIsEnable = false;
-            this.btnPararIsEnable = true;
+            this.BtnCalibrarIsEnable = false;
+            this.BtnPararIsEnable = true;
         }
 
         public void btnPlayTomaDeDatos_Click()
         {
-            this.btnPararIsEnable = false;
-            this.btnPlayTomaDeDatosIsEnable = false;
-            this.btnStopTomaDeDatos = true;
+            this.BtnPararIsEnable = false;
+            this.BtnPlayTomaDeDatosIsEnable = false;
+            this.BtnStopTomaDeDatos = true;
             this.isGetData = true;
         }
 
         public void disableAllButtonsActions()
         {
             this.isGetData = false;
-            this.btnPararIsEnable = false;
-            this.btnPlayTomaDeDatosIsEnable = false;
-            this.btnCalibrarIsEnable = false;
-            this.btnStopTomaDeDatos = false;
+            this.BtnPararIsEnable = false;
+            this.BtnPlayTomaDeDatosIsEnable = false;
+            this.BtnCalibrarIsEnable = false;
+            this.BtnStopTomaDeDatos = false;
         }
 
         public static HeaderView clear()
         {
             return new HeaderView();
-        }
-        public void updateUpload(int worker)
-        {
-            this.workerState = worker;
         }
     }
 }

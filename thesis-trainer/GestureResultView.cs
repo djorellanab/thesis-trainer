@@ -70,7 +70,21 @@ namespace thesis_trainer
             }
         }
 
-        public int IndexStep { get; set; }
+        public int indexStep = 0;
+        public int IndexStep
+        {
+            get
+            {
+                return this.indexStep;
+            }
+
+            private set
+            {
+                this.SetProperty(ref this.indexStep, value);
+            }
+        }
+
+        public bool isNewFunctionalMovement = false;
         #endregion
 
         #region constructor
@@ -103,11 +117,11 @@ namespace thesis_trainer
             // Si no hay seguimiento, se asigna valores por default
             if (!this.isTracked)
             {
-                this.progress = -1.0f;
+                this.Progress = -1.0f;
             }
             else // Si hay, Se asigna los valores pasado
             {
-                this.progress = progress;
+                this.Progress = progress;
             }
         }
 
@@ -116,13 +130,14 @@ namespace thesis_trainer
             this.stepsByMovement[this.repetitions][step.step] = step;
             if (step.step == (this.stepsByMovement.Count-1))
             {
+                isNewFunctionalMovement = true;
                 this.createStepsDetail();
             }
         }
 
         private void createStepsDetail()
         {
-            this.repetitions++;
+            this.Repetitions++;
             List<StepFunctionalMovement> _steps = new List<StepFunctionalMovement>();
             for (int i = 0; i < this.countStep; i++)
             {
@@ -136,20 +151,44 @@ namespace thesis_trainer
             List<StepFunctionalMovement> steps = this.stepsByMovement[mf];
             foreach (StepFunctionalMovement step in steps)
             {
-                foreach (int _angle in _angles)
+                if (step != null)
                 {
-                    List<JointType> joints = DetailsOfStepFunctionalMovement.translateAngles(_angle);
-                    List<DetailsOfStepFunctionalMovement> vectorialPoints = step.detailsOfStepFunctionalMovement.FindAll(x => joints.Contains((JointType)x.join));
-                    if (vectorialPoints.Count != 3) { continue; }
-                    DetailsOfStepFunctionalMovement origen = vectorialPoints.Find(x => (int)x.angle == (int)joints[0]);
-                    if (origen != null) { continue; }
-                    vectorialPoints.RemoveAll(x => (int)x.angle == (int)joints[0]);
-                    if (vectorialPoints.Count != 2) { continue; }
-                    Point po = new Point(origen.x, origen.y);
-                    Point p1 = new Point(vectorialPoints[0].x, vectorialPoints[0].y);
-                    Point p2 = new Point(vectorialPoints[1].x, vectorialPoints[1].y);
-                    origen.angle = KinectAngleBody.getAngleBody(po, p1, p2);
+                    foreach (int _angle in _angles)
+                    {
+                        List<JointType> joints = DetailsOfStepFunctionalMovement.translateAngles(_angle);
+                        List<DetailsOfStepFunctionalMovement> vectorialPoints = step.detailsOfStepFunctionalMovement.FindAll(x => joints.Contains((JointType)x.join));
+                        if (vectorialPoints.Count != 3) { continue; }
+                        DetailsOfStepFunctionalMovement origen = vectorialPoints.Find(x => (int)x.angle == (int)joints[0]);
+                        if (origen != null) { continue; }
+                        vectorialPoints.RemoveAll(x => (int)x.angle == (int)joints[0]);
+                        if (vectorialPoints.Count != 2) { continue; }
+                        Point po = new Point(origen.x, origen.y);
+                        Point p1 = new Point(vectorialPoints[0].x, vectorialPoints[0].y);
+                        Point p2 = new Point(vectorialPoints[1].x, vectorialPoints[1].y);
+                        origen.angle = KinectAngleBody.getAngleBody(po, p1, p2);
+                    }
                 }
+            }
+        }
+
+        public void checkNewMovementFunctional()
+        {
+            if (this.isNewFunctionalMovement)
+            {
+                this.isNewFunctionalMovement = (this.indexStep == 0);
+            }
+        }
+
+        public bool isTakeDataOfFunctionalMovement()
+        {
+            return this.stepsByMovement[this.repetitions][this.indexStep] != null;
+        }
+
+        public void updateStep(int step)
+        {
+            if (step >-1)
+            {
+                this.IndexStep = step;
             }
         }
         #endregion

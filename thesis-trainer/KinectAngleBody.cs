@@ -11,30 +11,13 @@ namespace thesis_trainer
     /// </summary>
     public class KinectAngleBody
     {
-        Dictionary<JointType, double> Angles;
-
         public KinectAngleBody()
         {
-            this.Angles = new Dictionary<JointType, double>();
-
-            this.Angles.Add(JointType.Neck, 0);
-            this.Angles.Add(JointType.ShoulderRight, 0);
-            this.Angles.Add(JointType.ShoulderLeft, 0);
-            this.Angles.Add(JointType.ElbowRight, 0);
-            this.Angles.Add(JointType.ElbowLeft, 0);
-            this.Angles.Add(JointType.WristRight, 0);
-            this.Angles.Add(JointType.WristLeft, 0);
-            this.Angles.Add(JointType.SpineMid, 0);
-            this.Angles.Add(JointType.HipRight, 0);
-            this.Angles.Add(JointType.HipLeft, 0);
-            this.Angles.Add(JointType.KneeRight, 0);
-            this.Angles.Add(JointType.KneeLeft, 0);
-            this.Angles.Add(JointType.AnkleRight, 0);
-            this.Angles.Add(JointType.KneeLeft, 0);
         }
 
         public static double getAngleBody(Point origenPoint, Point p1, Point p2)
         {
+
             List<double> _origenPoint = new List<double> { origenPoint.X, origenPoint.Y };
             List<double> _p1 = new List<double> { p1.X, p1.Y };
             List<double> _p2 = new List<double> { p2.X, p2.Y };
