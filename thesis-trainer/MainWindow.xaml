@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:thesis_trainer"
         mc:Ignorable="d"
         Title="Entrenamiento del movimmiento funcional"
-        Height="750" Width="790"
+        Height="750" Width="800"
         Loaded="Window_Loaded"
         Closing="Window_Closing">
     <Grid Margin="10 0 10 0">
@@ -69,7 +69,7 @@
                     <Image Source="{Binding ImageSource}" Stretch="UniformToFill" />
                 </Viewbox>
             </StackPanel>
-            <Grid x:Name="gestureResultGrid" Grid.Column="0" Grid.Row="1" Width="Auto" Margin="5" VerticalAlignment="Top">
+            <Grid x:Name="gestureResultGrid" Grid.Column="0" Grid.Row="1" Width="Auto" Margin="5"  VerticalAlignment="Top">
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
                         <Style.Triggers>
@@ -89,9 +89,9 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <TextBlock Text="Resultado del Kinect" FontSize="20" FontFamily="Segoe UI" FontWeight="SemiBold" Grid.Row="0" Margin="5"/>
-                <TextBlock Text="{Binding Progress, StringFormat='Progreso: {0}'}" FontSize="18" FontFamily="Segoe UI" FontWeight="SemiBold" Grid.Row="1" Margin="5"/>
-                <TextBlock Text="{Binding Repetitions, StringFormat='Repeticiones: {0}'}" FontSize="18" FontFamily="Segoe UI" FontWeight="SemiBold" Grid.Row="2" Margin="5"/>
-                <TextBlock Text="{Binding IndexStep, StringFormat='Paso: {0}'}" FontSize="18" FontFamily="Segoe UI" FontWeight="SemiBold" Grid.Row="3" Margin="5"/>
+                <TextBlock Text="{Binding Repetitions, StringFormat='Repeticiones: {0}'}" FontSize="18" FontFamily="Segoe UI" FontWeight="SemiBold" Grid.Row="1" Margin="5"/>
+                <TextBlock Text="{Binding IndexStep, StringFormat='Paso: {0}'}" FontSize="18" FontFamily="Segoe UI" FontWeight="SemiBold" Grid.Row="2" Margin="5"/>
+                <TextBlock Text="{Binding Progress, StringFormat='Progreso: {0}'}" FontSize="18" FontFamily="Segoe UI" FontWeight="SemiBold" Grid.Row="3" Margin="5"/>
             </Grid>
         </Grid>
         <ProgressBar Grid.Row="2"  Height="20" Margin="5" Minimum="0" Maximum="100" Value="{Binding WorkerState}"></ProgressBar>

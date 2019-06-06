@@ -67,8 +67,6 @@ namespace thesis_trainer
         /// </summary>
         public GestureResultView GestureResultView { get; private set; }
 
-        FunctionalMovement functionalMovement;
-
 
         #endregion
 

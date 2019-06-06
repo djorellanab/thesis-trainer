@@ -99,6 +99,7 @@ namespace thesis_trainer
             this.IsTracked = isTracked;
             this.IndexStep = 0;
             this.stepsByMovement = new List<List<StepFunctionalMovement>>();
+            createStepsDetail();
             this.repetitions = 0;
             this.countStep = _countStep;
         }
@@ -125,19 +126,29 @@ namespace thesis_trainer
             }
         }
 
+        private bool isCorrectMF()
+        {
+            foreach (StepFunctionalMovement item in this.stepsByMovement[this.repetitions])
+            {
+                if (item == null) { return false; }
+            }
+            return true;
+        }
+
         public void addStepDetail(StepFunctionalMovement step)
         {
             this.stepsByMovement[this.repetitions][step.step] = step;
-            if (step.step == (this.stepsByMovement.Count-1))
+            if (step.step == (this.stepsByMovement.Count-1) && isCorrectMF())
             {
                 isNewFunctionalMovement = true;
                 this.createStepsDetail();
+                this.Repetitions++;
             }
         }
 
+
         private void createStepsDetail()
         {
-            this.Repetitions++;
             List<StepFunctionalMovement> _steps = new List<StepFunctionalMovement>();
             for (int i = 0; i < this.countStep; i++)
             {

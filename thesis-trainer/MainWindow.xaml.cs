@@ -49,8 +49,6 @@ namespace thesis_trainer
             }
         }
 
-        public List<StepFunctionalMovement> steps;
-
         /// <summary>
         /// Indice que define a la persona que esta escaneando (Vector body)
         /// </summary>
