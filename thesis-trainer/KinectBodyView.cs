@@ -105,12 +105,12 @@ namespace thesis_trainer
         /// <summary>
         /// Ancho de la imagen
         /// </summary>
-        private int displayWidth;
+        public int displayWidth;
 
         /// <summary>
         /// Alto de la imagen
         /// </summary>
-        private int displayHeight;
+        public int displayHeight;
 
         public Dictionary<JointType, DetailsOfStepFunctionalMovement> joinsAnalize ;
 

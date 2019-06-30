@@ -130,7 +130,8 @@ namespace thesis_trainer.views
             }
         }
 
-        public bool btnStopTomaDeDatos = false;
+        //public bool btnStopTomaDeDatos = false;
+        public bool btnStopTomaDeDatos = true;
         public bool BtnStopTomaDeDatos
         {
             get
@@ -222,7 +223,8 @@ namespace thesis_trainer.views
         private void disableAllButtonGetData()
         {
             this.BtnPlayTomaDeDatosIsEnable = false;
-            this.BtnStopTomaDeDatos = false;
+            //aca
+            this.BtnStopTomaDeDatos = true;
         }
 
 
@@ -304,7 +306,8 @@ namespace thesis_trainer.views
             this.BtnPararIsEnable = false;
             this.BtnPlayTomaDeDatosIsEnable = false;
             this.BtnCalibrarIsEnable = false;
-            this.BtnStopTomaDeDatos = false;
+            //aca
+            this.BtnStopTomaDeDatos = true;
         }
 
         public static HeaderView clear()

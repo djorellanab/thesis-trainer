@@ -43,8 +43,8 @@ namespace thesis_trainer
             productMagnitude *= KinectAngleBody.GetMagnitude(p2, new List<double> { 0, 0 });
 
             dotProductPoint /= productMagnitude;
-
-            return Math.Acos(dotProductPoint);
+            double radians = Math.Acos(dotProductPoint);
+            return (radians * 180) / Math.PI;
         }
 
         public static List<double> GetTraslationPoint(List<double> origenPoint, List<double> refPoint)

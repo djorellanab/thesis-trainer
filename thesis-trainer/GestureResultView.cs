@@ -1,8 +1,11 @@
 ﻿using Microsoft.Kinect;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using thesis_trainer.common;
 using thesis_trainer.models;
+using draw = System.Drawing;
 
 namespace thesis_trainer
 {
@@ -99,9 +102,9 @@ namespace thesis_trainer
             this.IsTracked = isTracked;
             this.IndexStep = 0;
             this.stepsByMovement = new List<List<StepFunctionalMovement>>();
-            createStepsDetail();
             this.repetitions = 0;
             this.countStep = _countStep;
+            createStepsDetail();
         }
 
 
@@ -138,11 +141,9 @@ namespace thesis_trainer
         public void addStepDetail(StepFunctionalMovement step)
         {
             this.stepsByMovement[this.repetitions][step.step] = step;
-            if (step.step == (this.stepsByMovement.Count-1) && isCorrectMF())
+            if (step.step == (this.countStep-1) && isCorrectMF())
             {
                 isNewFunctionalMovement = true;
-                this.createStepsDetail();
-                this.Repetitions++;
             }
         }
 
@@ -169,25 +170,61 @@ namespace thesis_trainer
                         List<JointType> joints = DetailsOfStepFunctionalMovement.translateAngles(_angle);
                         List<DetailsOfStepFunctionalMovement> vectorialPoints = step.detailsOfStepFunctionalMovement.FindAll(x => joints.Contains((JointType)x.join));
                         if (vectorialPoints.Count != 3) { continue; }
-                        DetailsOfStepFunctionalMovement origen = vectorialPoints.Find(x => (int)x.angle == (int)joints[0]);
-                        if (origen != null) { continue; }
-                        vectorialPoints.RemoveAll(x => (int)x.angle == (int)joints[0]);
+                        DetailsOfStepFunctionalMovement origen = vectorialPoints.Find(x => x.join == (int)joints[0]);
+                        if (origen == null) { continue; }
+                        vectorialPoints.RemoveAll(x => (int)x.join == (int)joints[0]);
                         if (vectorialPoints.Count != 2) { continue; }
                         Point po = new Point(origen.x, origen.y);
                         Point p1 = new Point(vectorialPoints[0].x, vectorialPoints[0].y);
                         Point p2 = new Point(vectorialPoints[1].x, vectorialPoints[1].y);
                         origen.angle = KinectAngleBody.getAngleBody(po, p1, p2);
                     }
+                    Predicate<DetailsOfStepFunctionalMovement> predicate = detail => {
+                        return !_angles.Contains(detail.join);
+                    };
+                    step.detailsOfStepFunctionalMovement.RemoveAll(predicate);
+                    convertImageTo64(step);
                 }
             }
+        }
+
+        private void convertImageTo64(StepFunctionalMovement step)
+        {
+            if (step.pathImage == null) { return; }
+            string base64String = "";
+            using (draw.Image image = draw.Image.FromFile(step.pathImage))
+            {
+                using (MemoryStream m = new MemoryStream())
+                {
+                    image.Save(m, image.RawFormat);
+                    byte[] imageBytes = m.ToArray();
+                    base64String = "data:image/png;base64,";
+                    base64String += Convert.ToBase64String(imageBytes);
+                }
+            }
+            File.Delete(step.pathImage);
+            step.pathImage = base64String;
         }
 
         public void checkNewMovementFunctional()
         {
             if (this.isNewFunctionalMovement)
             {
-                this.isNewFunctionalMovement = (this.indexStep == 0);
+                if (this.indexStep == 0)
+                {
+                    this.isNewFunctionalMovement = false;
+                }
             }
+        }
+
+        public void updateRepetitions()
+        {
+            foreach (StepFunctionalMovement item in this.stepsByMovement[this.repetitions])
+            {
+                if (item == null) { return; }
+            }
+            this.createStepsDetail();
+            this.Repetitions = this.Repetitions + 1;
         }
 
         public bool isTakeDataOfFunctionalMovement()

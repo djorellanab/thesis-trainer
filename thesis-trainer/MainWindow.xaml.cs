@@ -227,12 +227,12 @@ namespace thesis_trainer
                     }
                     this.kinectBodyView.clearJoins();
                     StepFunctionalMovement sfm = StepFunctionalMovement.createStep(details, step,
-                        this.headerView.Trainer.functionalMovement._ID, this.timeStep);
+                        this.headerView.Trainer.functionalMovement._ID, this.timeStep, this.headerView.Trainer.functionalMovement.movementFactor);
                     this.gestureResultView.addStepDetail(sfm);
-
-                    Thread thread = new Thread(() => screenshot(ref sfm));
+                    this.screenshot(ref sfm);
+                    /*Thread thread = new Thread(() => screenshot(ref sfm));
                     thread.Start();
-                    this.screenshoots.Add(thread);
+                    this.screenshoots.Add(thread);*/
 
                 }
                 catch (Exception)
@@ -244,8 +244,8 @@ namespace thesis_trainer
         {
             try
             {
-                RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap((int)this.kinectBodyView.ImageSource.Width,
-                    (int)this.kinectBodyView.ImageSource.Width, 96, 96, PixelFormats.Pbgra32);
+                RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(245,
+                    240, 96, 96, PixelFormats.Pbgra32);
                 renderTargetBitmap.Render(this.kinectBodyViewbox);
 
                 PngBitmapEncoder encoder = new PngBitmapEncoder();
@@ -255,9 +255,11 @@ namespace thesis_trainer
                 encoder.Save(fs);
                 fs.Close();
                 sfm.pathImage = pathPic;
+
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                string a = e.Message;
             }
         }
 
@@ -285,7 +287,7 @@ namespace thesis_trainer
             this.gestureResultView = new GestureResultView(false, -1.0f, this.headerView.Trainer.functionalMovement.steps.Count);
 
             // Herramienta que detecta las posturas Con el sensor kinect 
-            this.gestureDetector = new GestureDetector(this.kinectSensor, this.gestureResultView, this.headerView.Trainer.folder);
+            this.gestureDetector = new GestureDetector(this.kinectSensor, this.gestureResultView, this.headerView.Trainer.GBD);
 
             // Asigna los datos a la interfaz
             this.kinectBodyViewbox.DataContext = this.kinectBodyView;
@@ -449,17 +451,21 @@ namespace thesis_trainer
         /// <param name="e">Argumentos del evento</param>
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
-            timeStep += (1 / 60);
+            //timeStep += (1 / 60);
             // Actualiza el estado del kinect
             this.UpdateKinectStatusText();
             this.UpdateKinectFrameData();
             int step = this.headerView.Trainer.functionalMovement.getStep(this.gestureResultView.Progress);
             this.gestureResultView.updateStep(step);
             this.gestureResultView.checkNewMovementFunctional();
-             
-            if (this.headerView.isGetData && !this.gestureResultView.isNewFunctionalMovement && !this.gestureResultView.isTakeDataOfFunctionalMovement())
+            this.gestureResultView.updateRepetitions();
+            /*this.headerView.isGetData &&*/
+            if(step > -1)
             {
-                this.checkData(step);
+                if (!this.gestureResultView.isNewFunctionalMovement && !this.gestureResultView.isTakeDataOfFunctionalMovement())
+                {
+                    this.checkData(step);
+                }
             }
         }
 
@@ -495,27 +501,19 @@ namespace thesis_trainer
             _bgWorker.DoWork += (s, e) =>
             {
                 MessageBox.Show("Esperar un momento, exportando la informacion a la carpeta correspondiente");
-                int total = this.screenshoots.Count + this.gestureResultView.stepsByMovement.Count;
+                int total = this.gestureResultView.stepsByMovement.Count;
                 total += 10;
                 int load = 0;
                 double getLoad = 0;
-                for (int i = 0; i < this.screenshoots.Count; i++)
-                {
-                    Thread th = this.screenshoots[i];
-                    while (th.IsAlive) { }
-                    load++;
-                    getLoad = (load / total) * 100;
-                    this.WorkerState = Convert.ToInt32(getLoad);
-                }
                 for (int i = 0; i < this.gestureResultView.stepsByMovement.Count; i++)
                 {
                     this.gestureResultView.getAngle(this.headerView.Trainer.functionalMovement.anglesOfMovement, i);
                     load++;
                     getLoad = (load / total) * 100;
                     this.WorkerState = Convert.ToInt32(getLoad);
+                    string stringJson = JsonConvert.SerializeObject(this.gestureResultView.stepsByMovement[i]);
+                    System.IO.File.WriteAllText($"{this.headerView.Trainer.folder}/datos-de-entrenamiento-{i+1}.json", stringJson);
                 }
-                string stringJson = JsonConvert.SerializeObject(this.gestureResultView.stepsByMovement);
-                System.IO.File.WriteAllText($"{this.headerView.Trainer.folder}/datos-entrenamiento.json", stringJson);
                 this.WorkerState = 100;
                 MessageBox.Show($"Se ha exportado toda la informaccion a la carpeta: {this.headerView.Trainer.folder}");
             };
