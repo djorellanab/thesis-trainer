@@ -227,7 +227,7 @@ namespace thesis_trainer
                     }
                     this.kinectBodyView.clearJoins();
                     StepFunctionalMovement sfm = StepFunctionalMovement.createStep(details, step,
-                        this.headerView.Trainer.functionalMovement._ID, this.timeStep, this.headerView.Trainer.functionalMovement.movementFactor);
+                        this.headerView.Trainer.functionalMovement._ID, this.timeStep, this.gestureResultView.Progress);
                     this.gestureResultView.addStepDetail(sfm);
                     this.screenshot(ref sfm);
                     /*Thread thread = new Thread(() => screenshot(ref sfm));

@@ -15,10 +15,10 @@ namespace thesis_trainer.models
         public List<DetailsOfStepFunctionalMovement> detailsOfStepFunctionalMovement { get; set; }
         public string pathImage { get; set; }
         public bool status { get; set; }
-        public decimal factorMovement { get; set; }
+        public float factorMovement { get; set; }
 
         public static StepFunctionalMovement createStep(List<DetailsOfStepFunctionalMovement> details, int _step,
-            string _functionalMovement, double _time, decimal _factorMovement)
+            string _functionalMovement, double _time, float _factorMovement)
         {
             return new StepFunctionalMovement()
             {
